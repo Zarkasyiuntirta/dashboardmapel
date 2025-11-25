@@ -206,6 +206,7 @@ const TaskSunburstChart: React.FC<{ tasks: { selesai: number } }> = ({ tasks }) 
 
 // New Component for the 3D bar chart
 const AllStudentsRankChart: React.FC<{ students: Student[], selectedStudentId?: number }> = ({ students, selectedStudentId }) => {
+    const [hoveredStudentId, setHoveredStudentId] = useState<number | null>(null);
     const studentScores = useMemo(() => {
         return students
             .map(s => ({
@@ -223,11 +224,18 @@ const AllStudentsRankChart: React.FC<{ students: Student[], selectedStudentId?: 
                 {studentScores.map((student) => {
                     const barHeight = student.score;
                     const isSelected = student.id === selectedStudentId;
+                    const isHovered = student.id === hoveredStudentId;
 
                     return (
-                        <div key={student.id} className="relative h-full flex-1 max-w-[40px] min-w-[15px] flex items-end justify-center">
+                        <div 
+                            key={student.id} 
+                            className="relative h-full flex-1 max-w-[40px] min-w-[15px] flex items-end justify-center transition-transform duration-300 ease-out"
+                            style={{ transform: isHovered ? 'translateY(-10px)' : 'translateY(0)' }}
+                            onMouseEnter={() => setHoveredStudentId(student.id)}
+                            onMouseLeave={() => setHoveredStudentId(null)}
+                        >
                              {/* Tooltip */}
-                            <div className={`absolute bottom-[105%] left-1/2 -translate-x-1/2 transition-opacity duration-300 bg-gray-900/80 backdrop-blur-sm p-2 rounded-lg shadow-lg border border-cyan-500/50 pointer-events-none z-10 w-32 text-center ${isSelected ? 'opacity-100' : 'opacity-0'}`}>
+                            <div className={`absolute bottom-[105%] left-1/2 -translate-x-1/2 transition-opacity duration-300 bg-gray-900/80 backdrop-blur-sm p-2 rounded-lg shadow-lg border border-cyan-500/50 pointer-events-none z-10 w-32 text-center ${isSelected || isHovered ? 'opacity-100' : 'opacity-0'}`}>
                                 <img src={student.picture} alt={student.name} className="w-12 h-12 rounded-full mx-auto mb-2 border-2 border-cyan-400"/>
                                 <p className="text-white font-bold text-sm truncate">{student.name}</p>
                                 <p className="text-cyan-300 text-lg font-bold">{student.score}</p>
@@ -242,10 +250,10 @@ const AllStudentsRankChart: React.FC<{ students: Student[], selectedStudentId?: 
                                 }}
                             >
                                 {/* Front face */}
-                                <div className={`absolute inset-0 transition-colors duration-300 transform ${isSelected ? 'bg-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.8)]' : 'bg-gradient-to-b from-cyan-400 to-blue-600'}`} style={{transform: 'translateZ(7.5px)'}}></div>
+                                <div className={`absolute inset-0 transition-colors duration-300 transform ${isSelected || isHovered ? 'bg-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.8)]' : 'bg-gradient-to-b from-cyan-400 to-blue-600'}`} style={{transform: 'translateZ(7.5px)'}}></div>
                                 {/* Top face */}
                                 <div
-                                    className={`absolute left-0 top-0 w-full h-[15px] transition-colors duration-300 ${isSelected ? 'bg-cyan-100' : 'bg-cyan-200'}`}
+                                    className={`absolute left-0 top-0 w-full h-[15px] transition-colors duration-300 ${isSelected || isHovered ? 'bg-cyan-100' : 'bg-cyan-200'}`}
                                     style={{ transform: 'rotateX(90deg) translateZ(7.5px)' }}
                                 ></div>
                             </div>
@@ -259,6 +267,7 @@ const AllStudentsRankChart: React.FC<{ students: Student[], selectedStudentId?: 
 
 // New Component for the Attendance 3D bar chart (Identical styling)
 const AttendanceRankChart: React.FC<{ students: Student[], selectedStudentId?: number }> = ({ students, selectedStudentId }) => {
+    const [hoveredStudentId, setHoveredStudentId] = useState<number | null>(null);
     const studentScores = useMemo(() => {
         return students
             .map(s => ({
@@ -276,11 +285,18 @@ const AttendanceRankChart: React.FC<{ students: Student[], selectedStudentId?: n
                 {studentScores.map((student) => {
                     const barHeight = student.score;
                     const isSelected = student.id === selectedStudentId;
+                    const isHovered = student.id === hoveredStudentId;
 
                     return (
-                        <div key={student.id} className="relative h-full flex-1 max-w-[40px] min-w-[15px] flex items-end justify-center">
+                        <div 
+                            key={student.id} 
+                            className="relative h-full flex-1 max-w-[40px] min-w-[15px] flex items-end justify-center transition-transform duration-300 ease-out"
+                            style={{ transform: isHovered ? 'translateY(-10px)' : 'translateY(0)' }}
+                            onMouseEnter={() => setHoveredStudentId(student.id)}
+                            onMouseLeave={() => setHoveredStudentId(null)}
+                        >
                              {/* Tooltip */}
-                            <div className={`absolute bottom-[105%] left-1/2 -translate-x-1/2 transition-opacity duration-300 bg-gray-900/80 backdrop-blur-sm p-2 rounded-lg shadow-lg border border-cyan-500/50 pointer-events-none z-10 w-32 text-center ${isSelected ? 'opacity-100' : 'opacity-0'}`}>
+                            <div className={`absolute bottom-[105%] left-1/2 -translate-x-1/2 transition-opacity duration-300 bg-gray-900/80 backdrop-blur-sm p-2 rounded-lg shadow-lg border border-cyan-500/50 pointer-events-none z-10 w-32 text-center ${isSelected || isHovered ? 'opacity-100' : 'opacity-0'}`}>
                                 <img src={student.picture} alt={student.name} className="w-12 h-12 rounded-full mx-auto mb-2 border-2 border-cyan-400"/>
                                 <p className="text-white font-bold text-sm truncate">{student.name}</p>
                                 <p className="text-cyan-300 text-lg font-bold">{student.score}</p>
@@ -295,10 +311,10 @@ const AttendanceRankChart: React.FC<{ students: Student[], selectedStudentId?: n
                                 }}
                             >
                                 {/* Front face */}
-                                <div className={`absolute inset-0 transition-colors duration-300 transform ${isSelected ? 'bg-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.8)]' : 'bg-gradient-to-b from-cyan-400 to-blue-600'}`} style={{transform: 'translateZ(7.5px)'}}></div>
+                                <div className={`absolute inset-0 transition-colors duration-300 transform ${isSelected || isHovered ? 'bg-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.8)]' : 'bg-gradient-to-b from-cyan-400 to-blue-600'}`} style={{transform: 'translateZ(7.5px)'}}></div>
                                 {/* Top face */}
                                 <div
-                                    className={`absolute left-0 top-0 w-full h-[15px] transition-colors duration-300 ${isSelected ? 'bg-cyan-100' : 'bg-cyan-200'}`}
+                                    className={`absolute left-0 top-0 w-full h-[15px] transition-colors duration-300 ${isSelected || isHovered ? 'bg-cyan-100' : 'bg-cyan-200'}`}
                                     style={{ transform: 'rotateX(90deg) translateZ(7.5px)' }}
                                 ></div>
                             </div>
@@ -423,13 +439,13 @@ const MainMenu: React.FC<MainMenuProps> = ({ user, students }) => {
                     </div>
                 </div>
             </div>
-             {/* Class Ranking Overview (Moved to Top) */}
-            <div className="flex-grow min-h-[300px]">
-                <AllStudentsRankChart students={students} selectedStudentId={selectedStudentId} />
-            </div>
-             {/* Nilai Daftar Hadir (Moved to Bottom) */}
+             {/* Nilai Daftar Hadir */}
              <div className="flex-grow min-h-[300px]">
                 <AttendanceRankChart students={students} selectedStudentId={selectedStudentId} />
+            </div>
+             {/* Class Ranking Overview */}
+            <div className="flex-grow min-h-[300px]">
+                <AllStudentsRankChart students={students} selectedStudentId={selectedStudentId} />
             </div>
         </div>
     );
