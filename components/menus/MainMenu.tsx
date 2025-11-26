@@ -273,7 +273,7 @@ const AttendanceRankChart: React.FC<{ students: Student[], selectedStudentId?: n
             .map(s => ({
                 id: s.id,
                 name: s.name,
-                score: calculateAbsensiScore(s.attendance.hadir),
+                score: calculateAbsensiScore(s.attendance.hadir, s.attendance.totalMeetings),
                 picture: s.picture
             }))
             .sort((a, b) => b.score - a.score);

@@ -3,6 +3,7 @@ export interface Attendance {
   hadir: number;
   izin: number;
   sakit: number;
+  totalMeetings: number;
 }
 
 export interface ExamScores {

@@ -1,9 +1,10 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { Student } from '../../types';
 import Table3D, { TableRow3D, TableCell } from '../common/Table3D';
 import Modal from '../common/Modal';
-import { TOTAL_MEETINGS } from '../../constants';
+// Fix: Removed unused import for TOTAL_MEETINGS which is not exported from constants.
 import { calculateAbsensiScore } from '../../utils/calculations';
 import { CalendarIcon } from '../Icons';
 
@@ -27,11 +28,8 @@ const AbsenteeismMenu: React.FC<AbsenteeismMenuProps> = ({ students, onUpdateStu
     setLocalStudents(prev =>
       prev.map(student => {
         if (student.id === studentId) {
+            // Remove auto-calculation. All fields are now independent.
             const updatedAttendance = { ...student.attendance, [field]: numericValue };
-            // Auto-adjust 'hadir' if izin/sakit changes
-            if (field !== 'hadir') {
-                updatedAttendance.hadir = TOTAL_MEETINGS - (updatedAttendance.izin + updatedAttendance.sakit);
-            }
             return { ...student, attendance: updatedAttendance };
         }
         return student;
@@ -69,20 +67,14 @@ const AbsenteeismMenu: React.FC<AbsenteeismMenuProps> = ({ students, onUpdateStu
       </div>
 
       <div className="bg-black/20 backdrop-blur-md rounded-2xl border border-cyan-400/20 overflow-hidden p-1">
-        <Table3D headers={['Name', 'NIM', 'Hadir', 'Izin', 'Sakit', 'Total Hadir', 'Total Meetings', 'Absensi Score']}>
+        <Table3D headers={['Name', 'NIM', 'Total Hadir', 'Izin', 'Sakit', 'Jumlah Pertemuan', 'Absensi Score']}>
             {localStudents.map(student => (
                 <TableRow3D key={student.id}>
                     <TableCell><p className="text-gray-400">{student.name}</p></TableCell>
                     <TableCell><p className="text-gray-400">{student.nim}</p></TableCell>
-                    {/* Hadir (Session) */}
+                    {/* Total Hadir (now editable) */}
                     <TableCell>
-                      {isEditing ? (
-                          <div className="flex gap-1">
-                            <button className="w-6 h-6 flex items-center justify-center text-xs rounded bg-green-500/20 text-green-400 border border-green-500/50 hover:bg-green-500 hover:text-white transition-colors">H</button>
-                            <button className="w-6 h-6 flex items-center justify-center text-xs rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 hover:bg-yellow-500 hover:text-white transition-colors">I</button>
-                            <button className="w-6 h-6 flex items-center justify-center text-xs rounded bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500 hover:text-white transition-colors">S</button>
-                          </div>
-                      ) : <span className="text-gray-600">-</span>}
+                      {isEditing ? <input type="number" value={student.attendance.hadir} onChange={(e) => handleInputChange(student.id, 'hadir', e.target.value)} className="w-12 bg-gray-700/50 p-1 rounded text-white"/> : <p className="text-cyan-300 font-bold">{student.attendance.hadir}</p>}
                     </TableCell>
                     {/* Izin */}
                     <TableCell>
@@ -92,13 +84,11 @@ const AbsenteeismMenu: React.FC<AbsenteeismMenuProps> = ({ students, onUpdateStu
                     <TableCell>
                       {isEditing ? <input type="number" value={student.attendance.sakit} onChange={(e) => handleInputChange(student.id, 'sakit', e.target.value)} className="w-12 bg-gray-700/50 p-1 rounded text-white"/> : <p className="text-gray-400">{student.attendance.sakit}</p>}
                     </TableCell>
-                    {/* Total Hadir (Actual) */}
-                    <TableCell><p className="text-cyan-300 font-bold">{student.attendance.hadir}</p></TableCell>
-                    {/* Total Meetings (Fixed Syntax Error) */}
+                    {/* Total Meetings (now editable) */}
                     <TableCell>
-                      <p className="text-gray-400">{TOTAL_MEETINGS}</p>
+                      {isEditing ? <input type="number" value={student.attendance.totalMeetings} onChange={(e) => handleInputChange(student.id, 'totalMeetings', e.target.value)} className="w-12 bg-gray-700/50 p-1 rounded text-white"/> : <p className="text-gray-400">{student.attendance.totalMeetings}</p>}
                     </TableCell>
-                    <TableCell><p className="font-bold text-lg text-cyan-300">{calculateAbsensiScore(student.attendance.hadir)}</p></TableCell>
+                    <TableCell><p className="font-bold text-lg text-cyan-300">{calculateAbsensiScore(student.attendance.hadir, student.attendance.totalMeetings)}</p></TableCell>
                 </TableRow3D>
             ))}
         </Table3D>

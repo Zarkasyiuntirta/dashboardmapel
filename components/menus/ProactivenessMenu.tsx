@@ -1,9 +1,10 @@
 
+
+
 import React, { useState, useEffect } from 'react';
 import { Student } from '../../types';
 import Table3D, { TableRow3D, TableCell } from '../common/Table3D';
 import Modal from '../common/Modal';
-import { TOTAL_MEETINGS } from '../../constants';
 import { calculateProactivenessScore } from '../../utils/calculations';
 
 interface ProactivenessMenuProps {
@@ -50,7 +51,7 @@ const ProactivenessMenu: React.FC<ProactivenessMenuProps> = ({ students, onUpdat
       </div>
 
       <div className="bg-black/20 backdrop-blur-md rounded-2xl border border-cyan-400/20 overflow-hidden p-1">
-        <Table3D headers={['Name', 'NIM', 'Bertanya', 'Menjawab', 'Menambahkan', 'Total Proactive', 'Total Meetings', 'Score']}>
+        <Table3D headers={['Name', 'NIM', 'Bertanya', 'Menjawab', 'Menambahkan', 'Total Proactive', 'Jumlah Pertemuan', 'Score']}>
           {localStudents.map(student => (
             <TableRow3D key={student.id}>
               <TableCell><p className="text-gray-400">{student.name}</p></TableCell>
@@ -65,8 +66,8 @@ const ProactivenessMenu: React.FC<ProactivenessMenuProps> = ({ students, onUpdat
                 {isEditing ? <input type="number" value={student.proactiveness.menambahkan} onChange={(e) => handleInputChange(student.id, 'menambahkan', e.target.value)} className="w-20 bg-gray-700/50 p-1 rounded text-white"/> : <p className="text-gray-400">{student.proactiveness.menambahkan}</p>}
               </TableCell>
               <TableCell><p className="text-gray-400">{getTotalProactive(student.proactiveness)}</p></TableCell>
-              <TableCell><p className="text-gray-400">{TOTAL_MEETINGS}</p></TableCell>
-              <TableCell><p className="font-bold text-lg text-cyan-300">{calculateProactivenessScore(student.proactiveness)}</p></TableCell>
+              <TableCell><p className="text-gray-400">{student.attendance.totalMeetings}</p></TableCell>
+              <TableCell><p className="font-bold text-lg text-cyan-300">{calculateProactivenessScore(student.proactiveness, student.attendance.totalMeetings)}</p></TableCell>
             </TableRow3D>
           ))}
         </Table3D>
