@@ -3,6 +3,7 @@ export interface Attendance {
   hadir: number;
   izin: number;
   sakit: number;
+  tanpaKeterangan: number;
   totalMeetings: number;
 }
 
@@ -21,6 +22,7 @@ export interface Proactiveness {
 
 export interface Tasks {
   selesai: number;
+  tidak_selesai: number;
 }
 
 export interface Student {

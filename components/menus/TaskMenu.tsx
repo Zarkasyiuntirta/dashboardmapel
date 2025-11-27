@@ -20,14 +20,27 @@ const TaskMenu: React.FC<TaskMenuProps> = ({ students, onUpdateStudents }) => {
     setLocalStudents(JSON.parse(JSON.stringify(students)));
   }, [students]);
   
-  const handleInputChange = (studentId: number, value: string) => {
-    const numericValue = Math.min(parseInt(value, 10) || 0, TOTAL_TASKS);
+  const handleTaskChange = (studentId: number, field: keyof Student['tasks'], value: string) => {
+    const numericValue = parseInt(value, 10) || 0;
+
     setLocalStudents(prev =>
-      prev.map(student =>
-        student.id === studentId
-          ? { ...student, tasks: { ...student.tasks, selesai: numericValue } }
-          : student
-      )
+      prev.map(student => {
+        if (student.id === studentId) {
+          let newSelesai = student.tasks.selesai;
+          let newTidakSelesai = student.tasks.tidak_selesai;
+
+          if (field === 'selesai') {
+            newSelesai = Math.min(Math.max(0, numericValue), TOTAL_TASKS);
+            newTidakSelesai = TOTAL_TASKS - newSelesai;
+          } else { // field === 'tidak_selesai'
+            newTidakSelesai = Math.min(Math.max(0, numericValue), TOTAL_TASKS);
+            newSelesai = TOTAL_TASKS - newTidakSelesai;
+          }
+
+          return { ...student, tasks: { selesai: newSelesai, tidak_selesai: newTidakSelesai } };
+        }
+        return student;
+      })
     );
   };
 
@@ -48,17 +61,18 @@ const TaskMenu: React.FC<TaskMenuProps> = ({ students, onUpdateStudents }) => {
       </div>
 
       <div className="bg-black/20 backdrop-blur-md rounded-2xl border border-cyan-400/20 overflow-hidden p-1">
-        <Table3D headers={['Name', 'NIM', 'Completed Tasks', 'Incomplete', 'Total Tasks', 'Task Score']}>
+        <Table3D headers={['Name', 'NIM', 'Completed Tasks', 'Incomplete Task', 'Total Tasks', 'Task Score']}>
             {localStudents.map(student => {
-                const incomplete = TOTAL_TASKS - student.tasks.selesai;
                 return (
                     <TableRow3D key={student.id}>
                         <TableCell><p className="text-gray-400">{student.name}</p></TableCell>
                         <TableCell><p className="text-gray-400">{student.nim}</p></TableCell>
                         <TableCell>
-                            {isEditing ? <input type="number" value={student.tasks.selesai} onChange={(e) => handleInputChange(student.id, e.target.value)} className="w-20 bg-gray-700/50 p-1 rounded text-white" max={TOTAL_TASKS}/> : <p className="text-gray-400">{student.tasks.selesai}</p>}
+                            {isEditing ? <input type="number" value={student.tasks.selesai} onChange={(e) => handleTaskChange(student.id, 'selesai', e.target.value)} className="w-20 bg-gray-700/50 p-1 rounded text-white" max={TOTAL_TASKS} min={0}/> : <p className="text-gray-400">{student.tasks.selesai}</p>}
                         </TableCell>
-                        <TableCell><p className="text-gray-400">{incomplete}</p></TableCell>
+                        <TableCell>
+                            {isEditing ? <input type="number" value={student.tasks.tidak_selesai} onChange={(e) => handleTaskChange(student.id, 'tidak_selesai', e.target.value)} className="w-20 bg-gray-700/50 p-1 rounded text-white" max={TOTAL_TASKS} min={0}/> : <p className="text-gray-400">{student.tasks.tidak_selesai}</p>}
+                        </TableCell>
                         <TableCell><p className="text-gray-400">{TOTAL_TASKS}</p></TableCell>
                         <TableCell><p className="font-bold text-lg text-cyan-300">{calculateTaskScore(student.tasks)}</p></TableCell>
                     </TableRow3D>

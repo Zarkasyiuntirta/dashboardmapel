@@ -67,7 +67,7 @@ const AbsenteeismMenu: React.FC<AbsenteeismMenuProps> = ({ students, onUpdateStu
       </div>
 
       <div className="bg-black/20 backdrop-blur-md rounded-2xl border border-cyan-400/20 overflow-hidden p-1">
-        <Table3D headers={['Name', 'NIM', 'Total Hadir', 'Izin', 'Sakit', 'Jumlah Pertemuan', 'Absensi Score']}>
+        <Table3D headers={['Name', 'NIM', 'Total Hadir', 'Izin', 'Sakit', 'Tanpa Keterangan', 'Jumlah Pertemuan', 'Absensi Score']}>
             {localStudents.map(student => (
                 <TableRow3D key={student.id}>
                     <TableCell><p className="text-gray-400">{student.name}</p></TableCell>
@@ -83,6 +83,10 @@ const AbsenteeismMenu: React.FC<AbsenteeismMenuProps> = ({ students, onUpdateStu
                     {/* Sakit */}
                     <TableCell>
                       {isEditing ? <input type="number" value={student.attendance.sakit} onChange={(e) => handleInputChange(student.id, 'sakit', e.target.value)} className="w-12 bg-gray-700/50 p-1 rounded text-white"/> : <p className="text-gray-400">{student.attendance.sakit}</p>}
+                    </TableCell>
+                    {/* Tanpa Keterangan */}
+                    <TableCell>
+                      {isEditing ? <input type="number" value={student.attendance.tanpaKeterangan} onChange={(e) => handleInputChange(student.id, 'tanpaKeterangan', e.target.value)} className="w-12 bg-gray-700/50 p-1 rounded text-white"/> : <p className="text-gray-400">{student.attendance.tanpaKeterangan}</p>}
                     </TableCell>
                     {/* Total Meetings (now editable) */}
                     <TableCell>
