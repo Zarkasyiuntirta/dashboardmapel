@@ -1,28 +1,49 @@
 
+// New Daily/Entry types
+export type AttendanceStatus = 'Hadir' | 'Izin' | 'Sakit' | 'Tanpa Keterangan';
+
+export interface DailyAttendance {
+  date: string; // YYYY-MM-DD
+  status: AttendanceStatus;
+}
+
+export interface ExamEntry {
+    score: number;
+    date: string; // YYYY-MM-DD
+}
+
+export interface DailyProactiveness {
+    date: string; // YYYY-MM-DD
+    bertanya: number;
+    menjawab: number;
+    menambahkan: number;
+}
+
+export interface DailyTask {
+    date: string; // YYYY-MM-DD
+    completed: number;
+    total: number;
+}
+
+
+// Updated main interfaces to use daily records
 export interface Attendance {
-  hadir: number;
-  izin: number;
-  sakit: number;
-  tanpaKeterangan: number;
-  totalMeetings: number;
+  dailyRecords: DailyAttendance[];
 }
 
 export interface ExamScores {
-  mid1: number;
-  final1: number;
-  mid2: number;
-  final2: number;
+  mid1: ExamEntry;
+  final1: ExamEntry;
+  mid2: ExamEntry;
+  final2: ExamEntry;
 }
 
 export interface Proactiveness {
-  bertanya: number;
-  menjawab: number;
-  menambahkan: number;
+  dailyRecords: DailyProactiveness[];
 }
 
 export interface Tasks {
-  selesai: number;
-  tidak_selesai: number;
+  dailyRecords: DailyTask[];
 }
 
 export interface Student {

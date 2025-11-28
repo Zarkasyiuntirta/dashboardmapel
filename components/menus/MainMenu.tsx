@@ -1,6 +1,7 @@
+
 import React, { useState, useMemo } from 'react';
 import { User, Student } from '../../types';
-import { calculateSummaryScore, calculateExamAverage, calculateTaskScore, calculateAbsensiScore } from '../../utils/calculations';
+import { calculateSummaryScore, calculateAbsensiScore, calculateTaskScore, getProactivenessTotals } from '../../utils/calculations';
 
 interface MainMenuProps {
   user: User;
@@ -59,7 +60,8 @@ const PieRingLayer: React.FC<{
 
 // New 3D Pie Chart component for Proactiveness
 const Proactiveness3DPieChart: React.FC<{ proactiveness: Student['proactiveness'] }> = ({ proactiveness }) => {
-    const { bertanya, menjawab, menambahkan } = proactiveness;
+    const totals = getProactivenessTotals(proactiveness.dailyRecords);
+    const { bertanya, menjawab, menambahkan } = totals;
     const total = bertanya + menjawab + menambahkan;
 
     if (total === 0) {
@@ -139,10 +141,10 @@ const Proactiveness3DPieChart: React.FC<{ proactiveness: Student['proactiveness'
 };
 
 // New Sunburst Chart Component for Tasks
-const TaskSunburstChart: React.FC<{ tasks: { selesai: number } }> = ({ tasks }) => {
+const TaskSunburstChart: React.FC<{ tasks: Student['tasks'] }> = ({ tasks }) => {
     const total = 10; // From constants
-    const completed = tasks.selesai;
-    const percentage = Math.round((completed / total) * 100);
+    const taskScore = calculateTaskScore(tasks);
+    const completed = Math.round((taskScore / 100) * total);
     
     // Generate segments
     const segments = [];
@@ -196,7 +198,7 @@ const TaskSunburstChart: React.FC<{ tasks: { selesai: number } }> = ({ tasks }) 
                  <circle cx="50" cy="50" r="20" fill="transparent" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-3xl font-bold text-white drop-shadow-md">{calculateTaskScore(tasks)}</span>
+                <span className="text-3xl font-bold text-white drop-shadow-md">{taskScore}</span>
                 <span className="text-[10px] text-cyan-300 uppercase tracking-wider">Nilai</span>
             </div>
         </div>
@@ -273,7 +275,7 @@ const AttendanceRankChart: React.FC<{ students: Student[], selectedStudentId?: n
             .map(s => ({
                 id: s.id,
                 name: s.name,
-                score: calculateAbsensiScore(s.attendance.hadir, s.attendance.totalMeetings),
+                score: calculateAbsensiScore(s.attendance),
                 picture: s.picture
             }))
             .sort((a, b) => b.score - a.score);
@@ -355,7 +357,6 @@ const MainMenu: React.FC<MainMenuProps> = ({ user, students }) => {
     
     const summaryScore = calculateSummaryScore(studentToDisplay);
     const rank = rankings.get(studentToDisplay.id) || 0;
-    const taskScore = calculateTaskScore(studentToDisplay.tasks);
 
     return (
         <div className="h-full flex flex-col gap-8">
@@ -411,19 +412,19 @@ const MainMenu: React.FC<MainMenuProps> = ({ user, students }) => {
                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-center">
                                 <div>
                                     <p className="text-xs text-gray-400 uppercase">Mid Sem 1</p>
-                                    <p className="text-3xl font-bold text-white">{studentToDisplay.exams.mid1}</p>
+                                    <p className="text-3xl font-bold text-white">{studentToDisplay.exams.mid1.score}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400 uppercase">Final Sem 1</p>
-                                    <p className="text-3xl font-bold text-white">{studentToDisplay.exams.final1}</p>
+                                    <p className="text-3xl font-bold text-white">{studentToDisplay.exams.final1.score}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400 uppercase">Mid Sem 2</p>
-                                    <p className="text-3xl font-bold text-white">{studentToDisplay.exams.mid2}</p>
+                                    <p className="text-3xl font-bold text-white">{studentToDisplay.exams.mid2.score}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400 uppercase">Final Sem 2</p>
-                                    <p className="text-3xl font-bold text-white">{studentToDisplay.exams.final2}</p>
+                                    <p className="text-3xl font-bold text-white">{studentToDisplay.exams.final2.score}</p>
                                 </div>
                             </div>
                         </StatCard>
